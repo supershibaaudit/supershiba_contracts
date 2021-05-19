@@ -1,8 +1,4 @@
 /**
- *Submitted for verification at BscScan.com on 2021-05-15
-*/
-
-/**
  * OFFICIAL SuperShiba MasterChef => farming & pools for Treats 
  * 
  * Officialy used on SuperShiba
@@ -1178,6 +1174,9 @@ contract MasterChef is Ownable {
     uint256 public totalAllocPoint = 0;
     // The block number when EGG mining starts.
     uint256 public startBlock;
+    
+    // info of addresses that have been created (LP Tokens)
+    mapping(address => bool) public lpAddresses;
 
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
     event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
@@ -1201,10 +1200,20 @@ contract MasterChef is Ownable {
         return poolInfo.length;
     }
 
-    // Add a new lp to the pool. Can only be called by the owner.
-    // XXX DO NOT add the same LP token more than once. Rewards will be messed up if you do.
-    function add(uint256 _allocPoint, IBEP20 _lpToken, uint16 _depositFeeBP, bool _withUpdate) public onlyOwner {
+
+
+    /**
+     * Add a new lp to the pool. Can only be called by the owner.
+     * 
+     * @param _allocPoint the total allocation points in the farm/pool (multiplier)
+     * @param _lpToken the token 
+     * @param safe_lp address of _lpToken used for GMC-04 Certik 
+     * @param _depositFeeBP deposit fee for farm/pool payable by users 
+     * @param _withUpdate if true updates reward variables for all pools (must be careful with gas)
+     */
+    function add(uint256 _allocPoint, IBEP20 _lpToken, address safe_lp, uint16 _depositFeeBP, bool _withUpdate) public onlyOwner {
         require(_depositFeeBP <= 10000, "add: invalid deposit fee basis points");
+        require(lpAddresses[safe_lp] == false, "add: lp token already added");
         if (_withUpdate) {
             massUpdatePools();
         }
@@ -1217,6 +1226,7 @@ contract MasterChef is Ownable {
             accEggPerShare: 0,
             depositFeeBP: _depositFeeBP
         }));
+        lpAddresses[safe_lp] = true;
     }
 
     // Update the given pool's TreatsToken allocation point and deposit fee. Can only be called by the owner.
