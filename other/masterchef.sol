@@ -1212,7 +1212,7 @@ contract MasterChef is Ownable {
      * @param _withUpdate if true updates reward variables for all pools (must be careful with gas)
      */
     function add(uint256 _allocPoint, IBEP20 _lpToken, address safe_lp, uint16 _depositFeeBP, bool _withUpdate) public onlyOwner {
-        require(_depositFeeBP <= 10000, "add: invalid deposit fee basis points");
+        require(_depositFeeBP <= 1000, "add: invalid deposit fee basis points");
         require(lpAddresses[safe_lp] == false, "add: lp token already added");
         if (_withUpdate) {
             massUpdatePools();
@@ -1231,7 +1231,7 @@ contract MasterChef is Ownable {
 
     // Update the given pool's TreatsToken allocation point and deposit fee. Can only be called by the owner.
     function set(uint256 _pid, uint256 _allocPoint, uint16 _depositFeeBP, bool _withUpdate) public onlyOwner {
-        require(_depositFeeBP <= 10000, "set: invalid deposit fee basis points");
+        require(_depositFeeBP <= 1000, "set: invalid deposit fee basis points");
         if (_withUpdate) {
             massUpdatePools();
         }
